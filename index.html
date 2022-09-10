@@ -4,10 +4,13 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite App</title>
+    <title>Image Alpha Overlay Thingy</title>
   </head>
   <body>
     <main>
+    <h1>Image Alpha Overlay Thingy</h1>
+    <button class='clear-btn' disabled>Clear</button>
+      <form>
       <div>
       <label> Alpha Destination </label>
         <input id='dest' name='dest' type='file' accept='image/*' />
@@ -16,6 +19,7 @@
         <label> Alpha Source  </label>
         <input id='src' name='src' type='file' accept='image/*' />
       </div>
+      </form>
     </main>
     <script type="module" src="/main.js"></script>
   </body>

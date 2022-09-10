@@ -2,6 +2,8 @@ import "./style.css";
 
 const dest = document.getElementById('dest');
 const src = document.getElementById('src');
+const main = document.querySelector('main');
+const clearBtn = document.querySelector('.clear-btn');
 const worker = new Worker('worker.js')
 let state;
 
@@ -44,17 +46,30 @@ worker.onmessage = (e) => {
 
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
+  const img = new Image();
   const link = document.createElement('a');
-
+  
   canvas.width = w;
   canvas.height = h;
   ctx.putImageData(newImage, 0, 0);
 
-  link.href = canvas.toDataURL();
-  link.download = "alphaMerged.png"
-  link.click();
+  const url =  canvas.toDataURL();
+  img.src = url;
+  link.href = url;
+  link.textContent='Download'
+  link.download ='alpha-overlayed.png';
+  main.appendChild(link);
+  main.appendChild(img); 
+  clearBtn.removeAttribute('disabled')
 }
 
+clearBtn.addEventListener('click', () => {
+  document.querySelector('form').reset();
+  clearBtn.attributes('disabled')
+  const images = document.querySelector('img')
+  if(images) images.forEach(i => i.remove());
+})
+ 
 function getImageDataFromBitmap(bitmap) {
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
