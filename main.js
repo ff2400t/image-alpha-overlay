@@ -4,7 +4,7 @@ const dest = document.getElementById('dest');
 const src = document.getElementById('src');
 const main = document.querySelector('main');
 const clearBtn = document.querySelector('.clear-btn');
-const worker = new Worker('worker.js')
+const worker = new Worker(new URL('./worker.js', import.meta.url));
 let state;
 
 
