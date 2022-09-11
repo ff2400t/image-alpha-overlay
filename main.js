@@ -7,6 +7,7 @@ const clearBtn = document.querySelector('.clear-btn');
 const worker = new Worker('worker.js')
 let state;
 
+
 dest.addEventListener('change', async (e) => {
   if (!e.target.files[0]) return;
   state = await createImageBitmap(e.target.files[0])
@@ -60,12 +61,10 @@ worker.onmessage = (e) => {
   link.download ='alpha-overlayed.png';
   main.appendChild(link);
   main.appendChild(img); 
-  clearBtn.removeAttribute('disabled')
 }
 
 clearBtn.addEventListener('click', () => {
   document.querySelector('form').reset();
-  clearBtn.attributes('disabled')
   const images = document.querySelector('img')
   if(images) images.forEach(i => i.remove());
 })
