@@ -65,7 +65,7 @@ worker.onmessage = (e) => {
 
 clearBtn.addEventListener('click', () => {
   document.querySelector('form').reset();
-  const images = document.querySelector('img')
+  const images = document.querySelectorAll('img')
   if(images) images.forEach(i => i.remove());
 })
  
