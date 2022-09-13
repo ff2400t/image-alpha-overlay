@@ -1,43 +1,56 @@
 import "./style.css";
+import 'dropzone/dist/dropzone.css';
+import Dropzone from "dropzone";
 
-const dest = document.getElementById('dest');
-const src = document.getElementById('src');
 const main = document.querySelector('main');
 const clearBtn = document.querySelector('.clear-btn');
 const worker = new Worker(new URL('./worker.js', import.meta.url));
 let state;
 
+const dest = new Dropzone('#dest', {
+  acceptedFiles: 'image/*',
+  dictDefaultMessage: 'Alpha Destination Image',
+  autoProcessQueue: false,
+  maxFiles: 1,
+});
 
-dest.addEventListener('change', async (e) => {
-  if (!e.target.files[0]) return;
-  state = await createImageBitmap(e.target.files[0])
+const src = new Dropzone('#src', {
+  acceptedFiles: 'image/*',
+  dictDefaultMessage: 'Alpha Source Image',
+  autoProcessQueue: false,
+  maxFiles: 1,
+});
+
+dest.on('addedfile', async (file) => {
+  state = await createImageBitmap(file)
     .then((bitmap) => ({
       height: bitmap.height,
       width: bitmap.width,
-    //ImageData
+      //ImageData
       dest: getImageDataFromBitmap(bitmap)
     }))
+  sendData();
 })
 
-src.addEventListener('change', async (e) => {
-  if (!e.target.files[0]) return;
+src.on('addedfile', async (file) => {
   // ImageData
-  state.src = await createImageBitmap(e.target.files[0], {
+  state.src = await createImageBitmap(file, {
     resizeWidth: state.width,
     resizeHeight: state.height,
     resizeQuality: "high"
   })
     .then(getImageDataFromBitmap)
-
   sendData();
 })
 
 function sendData() {
+  if (state.src && state.dest){
   const message = {
     src: state.src.data,
     dest: state.dest.data,
   }
-  worker.postMessage(message, [state.src.data.buffer, state.dest.data.buffer])
+  worker.postMessage(message, [state.src.data.buffer, state.dest.data.buffer]) 
+  }
 }
 
 worker.onmessage = (e) => {
@@ -47,28 +60,30 @@ worker.onmessage = (e) => {
 
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
-  const img = new Image();
-  const link = document.createElement('a');
-  
   canvas.width = w;
   canvas.height = h;
-  ctx.putImageData(newImage, 0, 0);
+  ctx.putImageData(newImage, 0, 0); 
+  const url = canvas.toDataURL();
 
-  const url =  canvas.toDataURL();
-  img.src = url;
-  link.href = url;
-  link.textContent='Download'
-  link.download ='alpha-overlayed.png';
-  main.appendChild(link);
-  main.appendChild(img); 
+  addResultAndLink(url);
+}
+
+function addResultAndLink(imageSrc) {
+  const div = document.createElement('div');
+  div.className = 'result-div'
+  div.innerHTML =
+    `<a href='${imageSrc}' download='image-overlay.png' class='download'>Download</a>
+  <img src='${imageSrc}' class='alpha-overlay'/>`
+  main.appendChild(div);
 }
 
 clearBtn.addEventListener('click', () => {
-  document.querySelector('form').reset();
-  const images = document.querySelectorAll('img')
-  if(images) images.forEach(i => i.remove());
+  dest.removeAllFiles();
+  src.removeAllFiles();
+  const results = document.querySelectorAll('.result-div');
+  if (results) results.forEach(e => e.remove());
 })
- 
+
 function getImageDataFromBitmap(bitmap) {
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');

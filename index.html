@@ -9,17 +9,11 @@
   <body>
     <main>
     <h1>Image Alpha Overlay Thingy</h1>
-    <button class='clear-btn' >Clear</button>
-      <form>
-      <div>
-      <label> Alpha Destination </label>
-        <input id='dest' name='dest' type='file' accept='image/*' />
+    <button class='clear-btn' >Clear</button> 
+      <div class='container'>
+        <form action="/target" class="dropzone" id='dest'></form> 
+        <form action="/target" class="dropzone" id='src'></form> 
       </div>
-      <div>
-        <label> Alpha Source  </label>
-        <input id='src' name='src' type='file' accept='image/*' />
-      </div>
-      </form>
     </main>
     <script type="module" src="/main.js"></script>
   </body>
