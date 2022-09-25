@@ -2,17 +2,21 @@ import "./style.css";
 import "dropzone/dist/dropzone.css";
 import Dropzone from "dropzone";
 
-const main = document.querySelector("main");
+const resultContainer = document.querySelector('.results-container');
 const clearBtn = document.querySelector(".clear-btn");
 const worker = new Worker(new URL("./worker.js", import.meta.url));
 let state = {};
+
+clearBtn.addEventListener("click", handleClear);
+
+resultContainer.addEventListener('click', handleDownloadButton);
 
 const dest = new Dropzone("#dest", {
   acceptedFiles: "image/*",
   dictDefaultMessage: "Alpha Destination Image",
   autoProcessQueue: false,
   maxFiles: 1,
-});
+}); 
 
 const src = new Dropzone("#src", {
   acceptedFiles: "image/*",
@@ -75,22 +79,22 @@ worker.onmessage = (e) => {
 
   addResultAndLink(url);
 };
-
+ 
 function addResultAndLink(imageSrc) {
   const div = document.createElement("div");
-  div.className = "result-div";
+  div.className = "result-div flex-col";
   div.innerHTML =
-    `<a href='${imageSrc}' download='image-overlay.png' class='download'>Download</a>
+    `<button src='${imageSrc}' class='download'>Download</button>
   <img src='${imageSrc}' class='alpha-overlay'/>`;
-  main.appendChild(div);
+  resultContainer.appendChild(div);
 }
 
-clearBtn.addEventListener("click", () => {
-  dest.removeAllFiles();
-  src.removeAllFiles();
-  const results = document.querySelectorAll(".result-div");
-  if (results) results.forEach((e) => e.remove());
-});
+function handleDownloadButton(e) {
+  if (e.target.className === 'download') {
+    const link = e.target.getAttribute('src');
+    downloadLink(link, 'image-overlay')
+  }
+}
 
 function getImageDataFromBitmap(bitmap) {
   const canvas = document.createElement("canvas");
@@ -102,4 +106,18 @@ function getImageDataFromBitmap(bitmap) {
   ctx.drawImage(bitmap, 0, 0);
 
   return ctx.getImageData(0, 0, w, h);
+}
+
+function downloadLink(link, name) {
+  const a = document.createElement('a');
+  a.href = link;
+  a.download = name;
+  a.click();
+}
+
+function handleClear() {
+  dest.removeAllFiles();
+  src.removeAllFiles();
+  const results = document.querySelectorAll(".result-div");
+  if (results) results.forEach((e) => e.remove());
 }
