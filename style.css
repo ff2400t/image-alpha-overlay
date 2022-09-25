@@ -49,11 +49,14 @@ input{
   flex-direction: column;
 }
 
-.result-div {
+.result-div { 
+  padding: var(--size-2);
+  gap: 1rem;
   align-items: center;
+
   border: var(--size-2) var(--surface-4) solid;
   border-radius: 1rem;
-  padding: var(--size-2);
+
   background-color: var(--surface-2);
 }
 
