@@ -2,21 +2,21 @@ import "./style.css";
 import "dropzone/dist/dropzone.css";
 import Dropzone from "dropzone";
 
-const resultContainer = document.querySelector('.results-container');
+const resultContainer = document.querySelector(".results-container");
 const clearBtn = document.querySelector(".clear-btn");
 const worker = new Worker(new URL("./worker.js", import.meta.url));
 let state = {};
 
 clearBtn.addEventListener("click", handleClear);
 
-resultContainer.addEventListener('click', handleDownloadButton);
+resultContainer.addEventListener("click", handleDownloadButton);
 
 const dest = new Dropzone("#dest", {
   acceptedFiles: "image/*",
   dictDefaultMessage: "Alpha Destination Image",
   autoProcessQueue: false,
   maxFiles: 1,
-}); 
+});
 
 const src = new Dropzone("#src", {
   acceptedFiles: "image/*",
@@ -26,14 +26,17 @@ const src = new Dropzone("#src", {
 });
 
 dest.on("addedfile", async (file) => {
+  removeOldFiles(dest);
   state.dest = file;
   sendData();
 });
 
 src.on("addedfile", async (file) => {
+  removeOldFiles(src);
   state.src = file;
   sendData();
 });
+
 
 async function sendData() {
   if (
@@ -77,22 +80,22 @@ worker.onmessage = (e) => {
   ctx.putImageData(newImage, 0, 0);
   const url = canvas.toDataURL();
 
+  removeAllChildNodes(resultContainer);
   addResultAndLink(url);
 };
- 
+
 function addResultAndLink(imageSrc) {
   const div = document.createElement("div");
   div.className = "result-div flex-col";
-  div.innerHTML =
-    `<button src='${imageSrc}' class='download'>Download</button>
+  div.innerHTML = `<button src='${imageSrc}' class='download'>Download</button>
   <img src='${imageSrc}' class='alpha-overlay'/>`;
   resultContainer.appendChild(div);
 }
 
 function handleDownloadButton(e) {
-  if (e.target.className === 'download') {
-    const link = e.target.getAttribute('src');
-    downloadLink(link, 'image-overlay')
+  if (e.target.className === "download") {
+    const link = e.target.getAttribute("src");
+    downloadLink(link, "image-overlay");
   }
 }
 
@@ -109,7 +112,7 @@ function getImageDataFromBitmap(bitmap) {
 }
 
 function downloadLink(link, name) {
-  const a = document.createElement('a');
+  const a = document.createElement("a");
   a.href = link;
   a.download = name;
   a.click();
@@ -120,4 +123,16 @@ function handleClear() {
   src.removeAllFiles();
   const results = document.querySelectorAll(".result-div");
   if (results) results.forEach((e) => e.remove());
+}
+
+function removeAllChildNodes(parent) {
+  while (parent.firstChild) {
+    parent.removeChild(parent.firstChild);
+  }
+}
+
+function removeOldFiles(dzObject) {
+  if (dzObject.files.length > 1) {
+    dzObject.removeFile(dzObject.files[0])
+  }
 }

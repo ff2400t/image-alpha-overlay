@@ -12,8 +12,8 @@ body {
 main{ 
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  padding: 1rem;
+  gap: var(--size-3);
+  padding: var(--size-3);
   max-width: 40rem;
   font-size: var(--font-size-3);
 }
@@ -41,7 +41,7 @@ input{
 }
 
 .container{
-  gap: 1rem;
+  gap: var(--size-3);
 }
 
 .flex-col{ 
@@ -49,13 +49,17 @@ input{
   flex-direction: column;
 }
 
+.result-container{
+  gap:var(--size-3);
+}
+
 .result-div { 
   padding: var(--size-2);
-  gap: 1rem;
+  gap: var(--size-3);
   align-items: center;
 
   border: var(--size-2) var(--surface-4) solid;
-  border-radius: 1rem;
+  border-radius: var(--size-3);
 
   background-color: var(--surface-2);
 }
